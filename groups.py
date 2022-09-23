@@ -1,14 +1,20 @@
 from array import array
 import people
 
+# Holds all group objects
 allGroups = []
 
+# Class for all groups
 class Groups:
     def __init__(self, maxNumGroups:int = 0):
+        # Maximum number of groups allowed
         self.maxNumGroups = maxNumGroups
+        # The current number of groups in the allGroups array
         self.currentNumGroups = len(allGroups)
+        # Total score (sum of all groups scores)
         self.totalScore = 0
 
+        # If groups already exist in the all groups array and it exceeds the max # of groups throw an error
         if self.currentNumGroups > self.maxNumGroups:
             raise Exception("Inputted group set exceeds maximum number of total groups.")
 
