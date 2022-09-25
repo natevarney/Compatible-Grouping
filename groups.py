@@ -1,5 +1,6 @@
 from array import array
 import people
+import random
 
 # Holds all group objects
 allGroups = []
@@ -13,6 +14,7 @@ class Groups:
         self.currentNumGroups = len(allGroups)
         # Total score (sum of all groups scores)
         self.totalScore = 0
+        self.groups = []
 
         # If groups already exist in the all groups array and it exceeds the max # of groups throw an error
         if self.currentNumGroups > self.maxNumGroups:
@@ -32,6 +34,13 @@ class Groups:
         else:
             print("Group does not exist in the set of all groups. Could not remove group.")
 
+    def updateGroupsWithAllGroups(self):
+        self.groups = allGroups
+
+    def updateAllGroupsWithGroups(self):
+        allGroups.clear()
+        allGroups.extend(self.groups)
+
     def calcTotalGroupScore(self):
         if len(allGroups) == 0:
             self.totalScore = 0
@@ -40,6 +49,57 @@ class Groups:
             for group in allGroups:
                 group.calcGroupScore()
                 self.totalScore += group.groupScore
+
+    def swapTwoRandomPeople(self):
+        numGroups = len(self.groups)
+        if numGroups <= 1:
+            print("Can not swap people, less than 2 groups exist")
+            return
+        else:
+            groupOneIndex = random.randint(0,len(self.groups)-1)
+            groupTwoIndex = groupOneIndex
+            while groupOneIndex == groupTwoIndex:
+                groupTwoIndex = random.randint(0,len(self.groups)-1)
+        groupOne = self.groups[groupOneIndex]
+        groupTwo = self.groups[groupTwoIndex]
+
+        groupOnePeople = groupOne.group
+        groupTwoPeople = groupTwo.group
+        numPeopleG1 = len(groupOnePeople)
+        numPeopleG2 = len(groupTwoPeople)
+
+        if numPeopleG1 == 0 or numPeopleG2 == 0:
+            print("One of the groups contains no people, can not make swap.")
+            return
+        else:
+            if numPeopleG1 == 1 and numPeopleG2 != 1:
+                g1PersonIndex = 0
+                g2PersonIndex = g1PersonIndex
+                while g1PersonIndex == g2PersonIndex:
+                    g2PersonIndex = random.randint(0,numPeopleG2-1)
+            elif numPeopleG2 == 1:
+                g2PersonIndex = 0
+                g1PersonIndex = g2PersonIndex
+                while g1PersonIndex == g2PersonIndex:
+                    g1PersonIndex = random.randint(0,numPeopleG1-1)
+            else:
+                g1PersonIndex = random.randint(0,numPeopleG1-1)
+                g2PersonIndex = g1PersonIndex
+                while g1PersonIndex == g2PersonIndex:
+                    g2PersonIndex = random.randint(0,numPeopleG2-1)
+        
+        personOne = groupOnePeople[g1PersonIndex]
+        personTwo = groupTwoPeople[g2PersonIndex]
+
+        groupOnePeople[g1PersonIndex] = personTwo
+        groupTwoPeople[g2PersonIndex] = personOne
+
+        personOne.currentGroup = groupTwo.groupNumber
+        personTwo.currentGroup = groupOne.groupNumber
+
+
+        
+
 
 class Group:
     def __init__(self, group:list = [], maxGroupSize:int = 0):

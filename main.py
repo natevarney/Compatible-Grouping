@@ -93,8 +93,17 @@ def main():
     #pp.pprint([vars(person) for person in list(people.peopleSet)])
 
     groupsObj.calcTotalGroupScore()
-    print(groupsObj.totalScore)
-    print(vars(groupsObj))
+    groupsObj.updateGroupsWithAllGroups()
+    for group in groupsObj.groups:
+        tGroup = group.group
+        for person in tGroup:
+            pp.pprint(vars(person))
+    groupsObj.swapTwoRandomPeople()
+    print("######################################\n#####################\n####################")
+    for group in groupsObj.groups:
+        tGroup = group.group
+        for person in tGroup:
+            pp.pprint(vars(person))
 
 if __name__=="__main__":
     main()
