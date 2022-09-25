@@ -65,11 +65,30 @@ def findBestSuccessor(successorList:list):
     bestSuccessor = None
     bestScore = 0
     for successor in successorList:
-        print(successor.totalScore)
         if successor.totalScore > bestScore:
             bestScore = successor.totalScore
             bestSuccessor = successor
     return bestSuccessor
+
+def attemptToTransition(currentState:groups.Groups):
+    successorsList = generateSuccessors(currentState,5)
+    bestSuccessor = findBestSuccessor(successorsList)
+    if bestSuccessor == None:
+        return currentState
+    else:
+        return bestSuccessor
+
+def runGroupSearch(startState:groups.Groups):
+    currentState = attemptToTransition(startState)
+    newState = attemptToTransition(currentState)
+
+    while currentState.totalScore != newState.totalScore:
+        currentState = newState
+        newState = attemptToTransition(currentState)
+    
+    return currentState
+
+
     
 
     
@@ -120,9 +139,8 @@ def main():
     groupsObj.updateGroupsWithAllGroups()
     groupsObj.calcTotalGroupScore()
     print("oldScore = "+str(groupsObj.totalScore))
-    successors = generateSuccessors(groupsObj,5)
-    bestSuccessor = findBestSuccessor(successors)
-    print("bestScore = " + str(bestSuccessor.totalScore))
+    bestGroup = runGroupSearch(groupsObj)
+    print("BestScore = "+str(bestGroup.totalScore))
 
 if __name__=="__main__":
     main()
