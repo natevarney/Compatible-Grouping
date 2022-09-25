@@ -46,7 +46,7 @@ class Groups:
             self.totalScore = 0
         else:
             self.totalScore = 0
-            for group in allGroups:
+            for group in self.groups:
                 group.calcGroupScore()
                 self.totalScore += group.groupScore
 

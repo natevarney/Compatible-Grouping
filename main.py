@@ -4,6 +4,7 @@ import people
 import groups
 import random
 import pprint as pp
+import copy
 
 # Given a list of names, generates people objects with random question answers
 def generateRandomPeople(namesList:array):
@@ -46,6 +47,30 @@ def loadPeopleIntoGroups(maxGroupSize:int,maxNumGroups:int,groupsObj:groups.Grou
     # And people still exist in the people set that have not been added to groups, raise error
     if len(people.peopleSet) > 0:
         raise Exception("More people exist in people set, than total allowed to fit into groups.\n The maximum number of people you can have is: "+ str(maxGroupSize*maxNumGroups))
+
+def generateNewState(currentState:groups.Groups):
+    newState = copy.deepcopy(currentState)
+    newState.swapTwoRandomPeople()
+    newState.calcTotalGroupScore()
+    return newState
+
+def generateSuccessors(currentState:groups.Groups,numSuccessors:int):
+    successorsList = []
+    for _ in range(numSuccessors):
+        newState = generateNewState(currentState)
+        successorsList.append(newState)
+    return successorsList
+
+def findBestSuccessor(successorList:list):
+    bestSuccessor = None
+    bestScore = 0
+    for successor in successorList:
+        print(successor.totalScore)
+        if successor.totalScore > bestScore:
+            bestScore = successor.totalScore
+            bestSuccessor = successor
+    return bestSuccessor
+    
 
     
 
@@ -92,18 +117,12 @@ def main():
     #     print(person.questionAnswers)
     #pp.pprint([vars(person) for person in list(people.peopleSet)])
 
-    groupsObj.calcTotalGroupScore()
     groupsObj.updateGroupsWithAllGroups()
-    for group in groupsObj.groups:
-        tGroup = group.group
-        for person in tGroup:
-            pp.pprint(vars(person))
-    groupsObj.swapTwoRandomPeople()
-    print("######################################\n#####################\n####################")
-    for group in groupsObj.groups:
-        tGroup = group.group
-        for person in tGroup:
-            pp.pprint(vars(person))
+    groupsObj.calcTotalGroupScore()
+    print("oldScore = "+str(groupsObj.totalScore))
+    successors = generateSuccessors(groupsObj,5)
+    bestSuccessor = findBestSuccessor(successors)
+    print("bestScore = " + str(bestSuccessor.totalScore))
 
 if __name__=="__main__":
     main()
