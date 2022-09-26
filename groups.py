@@ -10,26 +10,26 @@ class Groups:
     def __init__(self, maxNumGroups:int = 0):
         # Maximum number of groups allowed
         self.maxNumGroups = maxNumGroups
+        self.groups = []
         # The current number of groups in the allGroups array
-        self.currentNumGroups = len(allGroups)
+        self.currentNumGroups = len(self.groups)
         # Total score (sum of all groups scores)
         self.totalScore = 0
-        self.groups = []
 
         # If groups already exist in the all groups array and it exceeds the max # of groups throw an error
         if self.currentNumGroups > self.maxNumGroups:
             raise Exception("Inputted group set exceeds maximum number of total groups.")
 
     def addGroup(self,group):
-        if len(allGroups) < self.maxNumGroups:
-            allGroups.append(group)
+        if len(self.groups) < self.maxNumGroups:
+            self.groups.append(group)
             self.currentNumGroups += 1
         else:
             print("The maximum number of groups has already been created. Group could not be added.")
 
     def removeGroup(self,group):
-        if group in allGroups:
-            allGroups.remove(group)
+        if group in self.groups:
+            self.groups.remove(group)
             self.currentNumGroups -= 1
         else:
             print("Group does not exist in the set of all groups. Could not remove group.")
@@ -42,7 +42,7 @@ class Groups:
         allGroups.extend(self.groups)
 
     def calcTotalGroupScore(self):
-        if len(allGroups) == 0:
+        if len(self.groups) == 0:
             self.totalScore = 0
         else:
             self.totalScore = 0
@@ -102,10 +102,10 @@ class Groups:
 
 
 class Group:
-    def __init__(self, group:list = [], maxGroupSize:int = 0):
+    def __init__(self, group:list = [], maxGroupSize:int = 0, groupNumber:int = 0):
         self.maxGroupSize = maxGroupSize
         self.group = group
-        self.groupNumber = len(allGroups) + 1
+        self.groupNumber = groupNumber + 1
         self.currentGroupSize = len(self.group)
         self.groupScore = 0
 

@@ -15,7 +15,7 @@ def generateRandomPeople(namesList:array):
     for _ in range(numPeople):
         answers = []
         # Create random answers for that person
-        for _ in range(5):
+        for _ in range(10):
             answers.append(random.randint(0, 1))
         questionAnswersList.append(answers)
     # Create the person object and add the person to the people set
@@ -29,9 +29,9 @@ def generateRandomPeople(namesList:array):
 # Then adds each group into the set of all groups
 def loadPeopleIntoGroups(maxGroupSize:int,maxNumGroups:int,groupsObj:groups.Groups):
     # Iterate while we have not exceeded max # of groups and people still exist in set of people
-    while len(groups.allGroups) < maxNumGroups and people.peopleSet:
+    while len(groupsObj.groups) < maxNumGroups and people.peopleSet:
             # Create a new group to hold people
-            newGroup = groups.Group([],maxGroupSize)
+            newGroup = groups.Group([],maxGroupSize,groupsObj.currentNumGroups)
             # Iterate while the group has not exceeded max group size and people still exist in set of people
             while len(newGroup.group) < maxGroupSize and people.peopleSet:
                     # Get the next person in the people set
@@ -71,7 +71,7 @@ def findBestSuccessor(successorList:list):
     return bestSuccessor
 
 def attemptToTransition(currentState:groups.Groups):
-    successorsList = generateSuccessors(currentState,5)
+    successorsList = generateSuccessors(currentState,50)
     bestSuccessor = findBestSuccessor(successorsList)
     if bestSuccessor == None:
         return currentState
@@ -81,12 +81,58 @@ def attemptToTransition(currentState:groups.Groups):
 def runGroupSearch(startState:groups.Groups):
     currentState = attemptToTransition(startState)
     newState = attemptToTransition(currentState)
+    transitions = 1
 
     while currentState.totalScore != newState.totalScore:
+        transitions+=1
         currentState = newState
         newState = attemptToTransition(currentState)
+    print("Transitions = "+ str(transitions))
     
     return currentState
+
+def runThreadedGroupSearch(namesList:list,maxGroupSize:int,maxNumGroups:int,numThreads:int):
+    # Generate people and load them into the people set
+    generateRandomPeople(namesList)
+    # Create a copy of the people set so we can randomize later
+    orgPeopleSet = []
+    orgPeopleSet.extend(people.peopleSet)
+
+    # Maintain a list of the best groups we have found from all of our threads
+    bestGroupsList = []
+
+    for i in range(numThreads):
+        peopleCopy = []
+        peopleCopy.extend(orgPeopleSet)
+        random.shuffle(peopleCopy)
+        people.peopleSet.clear()
+        people.peopleSet.extend(peopleCopy)
+        groupsObj = groups.Groups(maxNumGroups=maxNumGroups)
+        loadPeopleIntoGroups(maxGroupSize,maxNumGroups,groupsObj)
+        groupsObj.calcTotalGroupScore()
+        print("Thread " +str(i+1)+" starting score = "+str(groupsObj.totalScore))
+        bestGroup = runGroupSearch(groupsObj)
+        print("Thread " +str(i+1)+" best score = "+str(bestGroup.totalScore))
+        print("###################################################################")
+        bestGroupsList.append(bestGroup)
+
+    finalBestGroup = findBestSuccessor(bestGroupsList)
+    print("Best set of groups has a total score of "+str(finalBestGroup.totalScore))
+    return bestGroupsList,finalBestGroup
+
+def displayPeopleInGroups(groupsObj:groups.Groups):
+    groups = groupsObj.groups
+    for group in groups:
+        print("###################################################################")
+        print("Group #"+ str(group.groupNumber))
+        print("-----------------")
+        people = group.group
+        for person in people:
+            print(person.name)
+    return
+
+
+
 
 
     
@@ -136,11 +182,14 @@ def main():
     #     print(person.questionAnswers)
     #pp.pprint([vars(person) for person in list(people.peopleSet)])
 
-    groupsObj.updateGroupsWithAllGroups()
-    groupsObj.calcTotalGroupScore()
-    print("oldScore = "+str(groupsObj.totalScore))
-    bestGroup = runGroupSearch(groupsObj)
-    print("BestScore = "+str(bestGroup.totalScore))
+    # groupsObj.updateGroupsWithAllGroups()
+    # groupsObj.calcTotalGroupScore()
+    # print("oldScore = "+str(groupsObj.totalScore))
+    # bestGroup = runGroupSearch(groupsObj)
+    # print("BestScore = "+str(bestGroup.totalScore))
+
+    bestGroupsList,bestGroup = runThreadedGroupSearch(testNames,maxGroupSize,maxNumGroups,50)
+    displayPeopleInGroups(bestGroup)
 
 if __name__=="__main__":
     main()
