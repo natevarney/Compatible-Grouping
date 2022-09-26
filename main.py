@@ -131,16 +131,6 @@ def displayPeopleInGroups(groupsObj:groups.Groups):
             print(person.name)
     return
 
-
-
-
-
-    
-
-    
-
-
-
 def main():
     testNames = ['Liam','Noah','Oliver','Elijah','James','William','Benjamin','Lucas','Henry','Theodore','Jack','Levi','Alexander','Jackson','Mateo','Daniel']
     # Maximum # of people that can fit into a group
@@ -148,45 +138,12 @@ def main():
     # Maximum # of groups that can be created
     maxNumGroups = 4
 
-    # jack = people.Person("Jack",14,[1,1,1,1,1])
-    # jack.updateName("Bob")
-    # jack.addPersonToPeopleArray()
-    # print(people.peopleArray)
-    # print([vars(node) for node in people.peopleArray])
-
     #Create the groups object to hold all of the groups
     groupsObj = groups.Groups(maxNumGroups=4)
 
-    # for _ in range(16):
-    #     newPerson = people.Person("bob",-1,[1,1,1])
-    #     people.peopleSet.add(newPerson)
-
-    # groups.allGroups.clear()
-    # for _ in range(4):
-    #     newGroup = groups.Group(set(),4)
-    #     while len(newGroup.group) < 4 and len(people.peopleSet) > 0:
-    #         currentPerson = people.peopleSet.pop()
-    #         newGroup.addPersonToGroup(currentPerson)
-    #         groups.allGroups.add(newGroup)
-
-    # randomGroup = list(groups.allGroups)[0]
-    # print(vars(list(randomGroup.group)[0]))
 
     generateRandomPeople(testNames)
     loadPeopleIntoGroups(maxGroupSize,maxNumGroups,groupsObj)
-
-    # pp.pprint(vars(groups.allGroups[0]))
-    # groups.allGroups[0].calcGroupScore()
-    # pp.pprint(vars(groups.allGroups[0]))
-    # for person in groups.allGroups[0].group:
-    #     print(person.questionAnswers)
-    #pp.pprint([vars(person) for person in list(people.peopleSet)])
-
-    # groupsObj.updateGroupsWithAllGroups()
-    # groupsObj.calcTotalGroupScore()
-    # print("oldScore = "+str(groupsObj.totalScore))
-    # bestGroup = runGroupSearch(groupsObj)
-    # print("BestScore = "+str(bestGroup.totalScore))
 
     bestGroupsList,bestGroup = runThreadedGroupSearch(testNames,maxGroupSize,maxNumGroups,50)
     displayPeopleInGroups(bestGroup)
